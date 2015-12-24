@@ -1,5 +1,5 @@
 <h1 align="center">Vertify 验证model</h1><br>
-#####你还在用垃圾代码在对你的model进行判断么
+####你还在用垃圾代码在对你的model进行判断么
 ```Java
 if(school != null && school.classes != null && school.classes.size()>0 && school.teacher != null && school.teacher.name != null ....)
   doSomething();
@@ -25,5 +25,5 @@ model类很简单,只需要在你关注的对象属性上加一个VertifyTag的�
     String name;
   }
 ```
-
+更多功能详见wiki
 
