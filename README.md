@@ -25,5 +25,8 @@ model类很简单,只需要在你关注的对象属性上加一个VertifyTag的�
     String name;
   }
 ```
-更多功能详见[wiki](https://github.com/jy01331184/magicLib/wiki)
-
+更多功能详见[wiki](https://github.com/jy01331184/magicLib/wiki)<br>
+ps.如果在android中使用的话 请添加混淆
+```c
+-keep class com.meilishuo.app.utils.Vertify$* {*;}
+```
