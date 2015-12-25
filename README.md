@@ -1,4 +1,4 @@
-<h1 align="center">Vertify 验证model</h1><br>
+<h1 align="center">**Vertify** vertifies your model</h1><br>
 ####to vertify your model object like this? Oh Aaauuh~
 ```Java
 if(school != null && school.classes != null && school.classes.size()>0 && school.teacher != null && school.teacher.name != null ....)
@@ -25,7 +25,7 @@ a simple **VertifyTag** annotation is enough. the **Vertify** do the rest for yo
     String name;
   }
 ```
-more [information](https://github.com/jy01331184/magicLib/wiki)<br>
+see TestCase & [wiki](https://github.com/jy01331184/magicLib/wiki) for more information<br>
 ps.for android proguarding  
 ```c
 -keep class com.example.Vertify$* {*;}
