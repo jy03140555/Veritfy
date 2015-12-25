@@ -35,7 +35,7 @@ a simple **VertifyTag** annotation is enough. the **Vertify** do the rest for yo
   }
 ```
 ####Advantage Feathures
-* 1  use strategy mode to add individual vertifcation
+* 1  use strategy mode to add individual vertifcation<br>
   ```Java
   Vertify.VertifyStrategy strategy = new Vertify.VertifyStrategy()
   {
