@@ -10,21 +10,45 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-
+/**
+ * Vertify Tool
+ * @author jy01331184
+ * @version 1.0
+ */
 public class Vertify {
 
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
     public @interface VertifyTag {
+        /**
+         * field's tag for vertify
+         */
         String value() default "";
+
+        /**
+         * weather this field should be skipped by predifined strategy
+         */
         boolean exclude() default false;
     }
 
+    /**
+     * vertify a object and it's field recursively to confirm they are not null.
+     * @param obj the target object
+     * @return this object is not null and it's fields which has been marked VertifyTag are not null.
+     */
     public static boolean vertifyNotNull(Object obj)
     {
         return vertify(obj, DEFAULT_NOT_NULL_STRATEGY);
     }
 
+    /**
+     * vertify a object and it's field recursively to confirm they are not null.
+     * notice that the predefined NOT_NULL vertifacation will be execute before your own strategies,
+     * so that you can avoid NULLPOINTER EXECEPTION
+     * @param obj the target object
+     * @param strategies your own strategies to vertify your object
+     * @return the obj and it's fields which has been marked VertifyTag are not null and well vertified by your own strategies.
+     */
     public static boolean vertifyNotNull(Object obj,VertifyStrategy... strategies)
     {
         if(strategies == null || strategies.length == 0)
@@ -35,11 +59,24 @@ public class Vertify {
         return vertify(obj, arr);
     }
 
+    /**
+     * vertify a object and it's field recursively to confirm they are not null & empty.
+     * @see Vertify#vertifyNotNull(Object)
+     * @param obj the target object
+     * @return the obj and it's fields which has been marked VertifyTag are not null & empty.
+     */
     public static boolean vertifyNotEmpty(Object obj)
     {
         return vertify(obj, DEFAULT_NOT_EMPTY_STRATEGY);
     }
 
+    /**
+     * @see Vertify#vertifyNotEmpty(Object)
+     * @see Vertify#vertifyNotNull(Object, VertifyStrategy...)
+     * @param obj the target object
+     * @param strategies your own strategies to vertify your object
+     * @return the obj and it's fields which has been marked VertifyTag are not null & empty and well vertified by your own strategies.
+     */
     public static boolean vertifyNotEmpty(Object obj,VertifyStrategy... strategies)
     {
         if(strategies == null || strategies.length == 0)
@@ -51,6 +88,13 @@ public class Vertify {
         return vertify(obj, arr);
     }
 
+    /**
+     * do the vertifaction all by your own strategies.
+     * notice that you should avoid NullPointer Exception in VertifyStrategy#judge() by your self
+     * @param obj the target object
+     * @param strategies your own strategies to vertify your object
+     * @return the obj and it's fields which has been marked VertifyTag are well vertified by your own strategies.
+     */
     public static boolean vertify(Object obj,VertifyStrategy... strategies)
     {
         if(obj == null || strategies == null || strategies.length == 0)
@@ -115,6 +159,10 @@ public class Vertify {
         }
     }
 
+
+    /**
+     * predifined strategy which can help you vertify null object
+     */
     public static final VertifyStrategy DEFAULT_NOT_NULL_STRATEGY = new VertifyStrategy(){
         @Override
         public boolean judge(Entity entity) {
@@ -128,6 +176,14 @@ public class Vertify {
         }
     };
 
+    /**
+     * predifined strategy which can help you vertify null & empty object.
+     * you can improve the rules yourself.
+     * java.lang.String -> null or ""
+     * java.util.Collection -> null or 0 size collection
+     * java.util.AbstractMap -> null or 0 size map
+     * Array -> null or 0 length array
+     */
     public static final VertifyStrategy DEFAULT_NOT_EMPTY_STRATEGY = new VertifyStrategy()
     {
         public boolean judge(Entity entity) {
@@ -177,6 +233,9 @@ public class Vertify {
         DEFAULT_NOT_EMPTY_STRATEGY.baseStrategy = DEFAULT_NOT_NULL_STRATEGY.baseStrategy = true;
     }
 
+    /**
+     * detialed log switcher
+     */
     public static boolean DEBUG = true;
 
     private static final void logEntity(VertifyStrategy strategy, Entity entity,boolean result)
@@ -206,9 +265,11 @@ public class Vertify {
 
     public static class ParentField
     {
+        /**
+         * store the parent field link,the first element are null,stands for the root
+         * the last element are the entity's direct parent field
+         */
         public List<Field> parentList = new ArrayList<>();
-
-        public ParentField(){ }
 
         public ParentField(ParentField parentField) {
             if(parentField != null)
@@ -292,7 +353,7 @@ public class Vertify {
 
     private static boolean isTextEmpty(String str)
     {
-        return str == null || str.trim().length() == 0;
+        return str == null || str.length() == 0;
     }
 
     private static String format(String str,int length)

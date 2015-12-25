@@ -1,8 +1,5 @@
 package com.example;
 
-/**
- * Created by a2014-498 on 15/12/25.
- */
 public class Company {
 
     @Vertify.VertifyTag
