@@ -34,7 +34,7 @@ a simple **VertifyTag** annotation is enough. the **Vertify** do the rest for yo
     String name;
   }
 ```
-see TestCase & [wiki](https://github.com/jy01331184/magicLib/wiki) for more information<br>
+see TestCase & [wiki](https://github.com/jy01331184/magicLib/wiki) for more usage & information<br>
 ps.for android proguarding  
 ```c
 -keep class com.example.Vertify$* {*;}
