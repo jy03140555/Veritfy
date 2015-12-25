@@ -64,18 +64,18 @@ a simple **VertifyTag** annotation is enough. the **Vertify** do the rest for yo
   	parent:null->null
 false
   ```
-* 3  very flexible way to combine strategies
-    there are predefined vertify strategies for judge null or empty object
+* 3  very flexible way to combine strategies<br>
+    **there are predefined vertify strategies for judge null or empty object**<br>
   ```Java
     public static boolean vertifyNotNull(Object obj);
     public static boolean vertifyNotEmpty(Object obj);
   ```
-    to use your own strategy together with predefined strategy
+    **to use your own strategy together with predefined strategy**<br>
   ```Java
     public static boolean vertifyNotNull(Object obj,VertifyStrategy... strategies)
     public static boolean vertifyNotEmpty(Object obj,VertifyStrategy... strategies)
   ```
-    to vertify object all by yourself
+    **to vertify object all by yourself**<br>
   ```Java
     public static boolean vertify(Object obj,VertifyStrategy... strategies)
   ```
