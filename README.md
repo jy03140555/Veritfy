@@ -1,15 +1,16 @@
-<h1 align="center">Vertify 验证model</h1><br>
-####你还在用垃圾代码在对你的model进行判断么
+<h1 align="center">**Vertify** vertifies your model</h1><br>
+####to vertify your model object ridiculously like this? Oh Aaauuh~
 ```Java
-if(school != null && school.classes != null && school.classes.size()>0 && school.teacher != null && school.teacher.name != null ....)
+if(school != null && school.classes != null && school.classes.size()>0 && school.teacher != null
+                  && school.teacher.name != null && school.teacher.student != null && school.teacher.student.name != null)
   doSomething();
 ```
-使用Vertify 只需要一行代码帮你搞定所有的事
+Now it can be done by a single line code below
 ```Java
 if(Vertify.vertifyNotEmpty(school))
   doSomething();
 ```
-model类很简单,只需要在你关注的对象属性上加一个VertifyTag的注解就可以.剩下的事...Vertify来帮你完成
+a simple **VertifyTag** annotation is enough. the **Vertify** do the rest for you
 ```Java
   public class School {
 
@@ -23,10 +24,66 @@ model类很简单,只需要在你关注的对象属性上加一个VertifyTag的�
   {
     @Vertify.VertifyTag
     String name;
+    
+    Student student;
+  }
+  
+  class Student
+  {
+    @Vertify.VertifyTag
+    String name;
   }
 ```
-更多功能详见[wiki](https://github.com/jy01331184/magicLib/wiki)<br>
-ps.如果在android中使用的话 请添加混淆
+####Advantage Feathures
+* **1  use strategy mode to add individual vertifcation**
+
+  ```Java
+  Vertify.VertifyStrategy strategy = new Vertify.VertifyStrategy()
+  {
+    @Override
+    public boolean judge(Vertify.Entity entity) {
+      if(entity.getFieldName().equals("classes")) // List<Clazz> classes 
+      {
+          List<Clazz> classes = entity.convert();
+          return classes.size()==2;
+      }
+      return true;
+    }
+  }
+  ```
+* **2  very detailed and formatted output info for your vertifcation**
+
+  ```c
+  NOT NULL VERTIFY:            ×		reason:NULL Object	
+  	filed:classes->interface java.util.List
+  	tag:
+  	value:null
+  	parent:null->null
+  NOT NULL VERTIFY:            √	
+  	filed:schoolName->class java.lang.String
+  	tag:tag1
+  	value:哈尔滨市第三中学
+  	parent:null->null
+false
+  ```
+* **3  very flexible way to combine strategies**
+
+    **there are predefined vertify strategies for judge null or empty object**<br>
+  ```Java
+    public static boolean vertifyNotNull(Object obj);
+    public static boolean vertifyNotEmpty(Object obj);
+  ```
+    **to use your own strategy together with predefined strategy**<br>
+  ```Java
+    public static boolean vertifyNotNull(Object obj,VertifyStrategy... strategies)
+    public static boolean vertifyNotEmpty(Object obj,VertifyStrategy... strategies)
+  ```
+    **to vertify object all by yourself**<br>
+  ```Java
+    public static boolean vertify(Object obj,VertifyStrategy... strategies)
+  ```
+see TestCase & [wiki](https://github.com/jy01331184/magicLib/wiki) for more usage & information<br>
+ps.for android proguarding  
 ```c
--keep class com.meilishuo.app.utils.Vertify$* {*;}
+-keep class com.example.Vertify$* {*;}
 ```
