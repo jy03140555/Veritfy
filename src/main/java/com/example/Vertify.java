@@ -57,7 +57,7 @@ public class Vertify {
             return false;
         try {
             List<Entity> entities = new ArrayList<>();
-            collect(obj.getClass(),obj, entities,null);
+            collect(obj.getClass(),obj, entities,null,null);
 
             for (Entity entity : entities) {
                 for (VertifyStrategy strategy : strategies) {
@@ -85,7 +85,7 @@ public class Vertify {
         return true;
     }
 
-    private static void collect(Class<?> cls,Object obj,  List<Entity> entities,Field parent)
+    private static void collect(Class<?> cls,Object obj,  List<Entity> entities,ParentField parentField,Field pfield)
     {
         try {
             Field[] fs = cls.getDeclaredFields();
@@ -95,7 +95,8 @@ public class Vertify {
                 Entity entity = new Entity();
                 entity.field = field;
                 entity.value = obj == null?null:field.get(obj);
-                entity.parent = parent;
+                entity.parent = new ParentField(parentField);
+                entity.parent.parentList.add(pfield);
                 if(ano != null )
                 {
                     entity.exclude = ano.exclude();
@@ -105,7 +106,7 @@ public class Vertify {
 
                 if(field.getType().getClassLoader()== Vertify.class.getClassLoader())
                 {
-                    collect(field.getType(), entity.value, entities,field);
+                    collect(field.getType(), entity.value, entities,entity.parent,field);
                 }
             }
         }
@@ -115,40 +116,52 @@ public class Vertify {
     }
 
     public static final VertifyStrategy DEFAULT_NOT_NULL_STRATEGY = new VertifyStrategy(){
-
         @Override
         public boolean judge(Entity entity) {
-            return entity.value != null;
+            boolean isNull = entity.value == null;
+            entity.reason = isNull?"NULL Object":"";
+            return !isNull;
         }
 
         public String getName() {
             return "NOT NULL VERTIFY";
-        };
+        }
     };
 
     public static final VertifyStrategy DEFAULT_NOT_EMPTY_STRATEGY = new VertifyStrategy()
     {
         public boolean judge(Entity entity) {
             if(entity.value == null)
+            {
+                entity.reason = "NULL Object";
                 return false;
+            }
             else if(entity.getType() == String.class)
             {
-                return !isTextEmpty(entity.value.toString());
+                boolean empty = isTextEmpty(entity.value.toString());
+                entity.reason = empty?"empty String":"";
+                return !empty;
             }
             else if(entity.value instanceof Collection)
             {
                 Collection<?> collection = (Collection<?>) entity.value;
-                return !collection.isEmpty();
+                boolean empty = collection.isEmpty();
+                entity.reason = empty?"empty collection":"";
+                return !empty;
             }
             else if(entity.value instanceof AbstractMap)
             {
                 AbstractMap<?, ?> map = (AbstractMap<?, ?>) entity.value;
-                return !map.isEmpty();
+                boolean empty = map.isEmpty();
+                entity.reason = empty?"empty collection":"";
+                return !empty;
             }
             else if(entity.value instanceof Object[])
             {
                 Object[] array = (Object[]) entity.value;
-                return array.length > 0;
+                boolean empty = array.length == 0;
+                entity.reason = (empty?"empty collection":"");
+                return !empty;
             }
 
             return true;
@@ -169,7 +182,9 @@ public class Vertify {
     private static final void logEntity(VertifyStrategy strategy, Entity entity,boolean result)
     {
         if(DEBUG)
-            System.out.println(format(strategy.getName()+":",25)+ "    "+(result?"√":"×")+"	"+entity);
+        {
+            System.out.println(format(strategy.getName()+":",25)+ "    "+(result?"√":("×"+  (isTextEmpty(entity.reason)?"":("\t\treason:"+entity.reason)  )))+"	"+entity);
+        }
     }
 
     private static final void logSkip(VertifyStrategy strategy, Entity entity)
@@ -189,17 +204,31 @@ public class Vertify {
         }
     }
 
+    public static class ParentField
+    {
+        public List<Field> parentList = new ArrayList<>();
+
+        public ParentField(){ }
+
+        public ParentField(ParentField parentField) {
+            if(parentField != null)
+                parentList.addAll(parentField.parentList);
+        }
+    }
+
     public static class Entity
     {
         boolean exclude;
         Field field;
         Object value;
-        Field parent;
+        ParentField parent;
         String tag;
+
+        String reason;
 
         @Override
         public String toString() {
-            return "{"+ format("field:"+field.getName()+"->"+field.getType().getName(),45)    +  format("tag:"+tag,12)   + format("value:"+value,45)+  format("parent:"+(parent == null?"":(parent.getName()+"->"+parent.getType().getName())),45) +   "}";
+            return "\n\tfiled:"+formatField(field)    + "\n\ttag:"+ tag   + "\n\tvalue:"+value+ "\n\tparent:"+ formatField(parent) ;
         }
 
         public Class<?> getType()
@@ -209,8 +238,11 @@ public class Vertify {
 
         public String getParentFieldName()
         {
-            if(parent != null)
-                return parent.getName();
+            if(parent != null){
+                Field lastParent = parent.parentList.get(parent.parentList.size() - 1);
+                if(lastParent != null)
+                    return lastParent.getName();
+            }
             return null;
         }
 
@@ -229,6 +261,35 @@ public class Vertify {
 
     }
 
+    private static String formatField(Field field)
+    {
+        if(field == null)
+            return "";
+        return field.getName()+"->"+field.getType();
+    }
+
+    private static String formatField(ParentField parentField)
+    {
+        if(parentField == null)
+            return "";
+        else
+        {
+            StringBuffer stringBuffer = new StringBuffer();
+
+            List<Field> parFieldList = parentField.parentList;
+
+            for (int i = parFieldList.size() - 1;i>=0;i--) {
+                Field field = parFieldList.get(i);
+                if(field != null)
+                    stringBuffer.append(field.getName()+"->"+field.getType().getName()+"\t==>\t");
+                else
+                    stringBuffer.append("null->null");
+            }
+
+            return stringBuffer.toString();
+        }
+    }
+
     private static boolean isTextEmpty(String str)
     {
         return str == null || str.trim().length() == 0;
@@ -238,6 +299,5 @@ public class Vertify {
     {
         return String.format("%-"+length+"s", str);
     }
-
 
 }
