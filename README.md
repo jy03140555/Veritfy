@@ -35,7 +35,7 @@ a simple **VertifyTag** annotation is enough. the **Vertify** do the rest for yo
   }
 ```
 ####Advantage Feathures
-* 1  **use strategy mode to add individual vertifcation**
+* **1  use strategy mode to add individual vertifcation**
 
   ```Java
   Vertify.VertifyStrategy strategy = new Vertify.VertifyStrategy()
@@ -51,7 +51,7 @@ a simple **VertifyTag** annotation is enough. the **Vertify** do the rest for yo
     }
   }
   ```
-* 2  **very detailed and formatted output info for your vertifcation**
+* **2  very detailed and formatted output info for your vertifcation**
 
   ```c
   NOT NULL VERTIFY:            ×		reason:NULL Object	
@@ -66,7 +66,7 @@ a simple **VertifyTag** annotation is enough. the **Vertify** do the rest for yo
   	parent:null->null
 false
   ```
-* 3  **very flexible way to combine strategies**
+* **3  very flexible way to combine strategies**
 
     **there are predefined vertify strategies for judge null or empty object**<br>
   ```Java
