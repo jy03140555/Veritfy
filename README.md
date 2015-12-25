@@ -1,5 +1,5 @@
 <h1 align="center">**Vertify** vertifies your model</h1><br>
-####to vertify your model object like this? Oh Aaauuh~
+####to vertify your model object ridiculously like this? Oh Aaauuh~
 ```Java
 if(school != null && school.classes != null && school.classes.size()>0 && school.teacher != null
                   && school.teacher.name != null && school.teacher.student != null && school.teacher.student.name != null)
